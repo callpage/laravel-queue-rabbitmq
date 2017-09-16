@@ -25,6 +25,7 @@ class RabbitMQConnector implements ConnectorInterface
     {
         // create connection with AMQP
         $this->connection = new AMQPConnection($config['host'], $config['port'], $config['login'], $config['password'], $config['vhost']);
+        $this->connection->set_close_on_destruct(false);
 
         return new RabbitMQQueue(
             $this->connection,

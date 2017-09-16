@@ -12,6 +12,7 @@ use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
+use VladimirYuldashev\LaravelQueueRabbitMQ\Queue\Exceptions\ConnectionClosedException;
 use VladimirYuldashev\LaravelQueueRabbitMQ\Queue\Jobs\RabbitMQJob;
 
 class RabbitMQQueue extends Queue implements QueueContract
@@ -117,6 +118,10 @@ class RabbitMQQueue extends Queue implements QueueContract
 	public function pop($queue = null)
 	{
 		$queue = $this->getQueueName($queue);
+
+		if (!$this->connection->isConnected()) {
+		    throw new ConnectionClosedException();
+        }
 
 		try {
 			// declare queue if not exists

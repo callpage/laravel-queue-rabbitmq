@@ -3,6 +3,7 @@
 namespace VladimirYuldashev\LaravelQueueRabbitMQ;
 
 use Illuminate\Support\ServiceProvider;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
 use VladimirYuldashev\LaravelQueueRabbitMQ\Queue\Connectors\RabbitMQConnector;
 
 class LaravelQueueRabbitMQServiceProvider extends ServiceProvider
@@ -39,7 +40,9 @@ class LaravelQueueRabbitMQServiceProvider extends ServiceProvider
         });
 
         $manager->stopping(function () use ($connector) {
-            $connector->getConnection()->close();
+            if ($connector->getConnection() instanceof AMQPStreamConnection) {
+                $connector->getConnection()->close();
+            }
         });
 
         $this->app->singleton('rabbitmq.connection', function ($app) use ($connector) {
